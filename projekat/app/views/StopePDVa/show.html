@@ -1,0 +1,286 @@
+#{extends 'standardForm.html' /} #{set title:'Stope PDVa' /}
+
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+
+<script>
+	function sync(item){
+		if ("${session.mode}" == "edit"){
+			datumKreiranja = item.find(".datumKreiranja").html()
+		    procenatPDVa = item.find(".procenatPDVa").html()
+		    vrstaPDVa = item.find(".vrstaPDVa").html()
+		    id = item.find(".id").html()
+		    $("#stopaPDVa_procenatPDVa").val(procenatPDVa);
+		    $("#stopaPDVa_datumKreiranja").val(datumKreiranja);
+		    $("#stopaPDVa_id").val(id);
+		    
+		
+
+			var options = document.getElementById("vrstaPDVa").children;
+			for (i = 0; i < options.length; i++) { 
+    			if(options[i].label == vrstaPDVa){
+    				document.getElementById("vrstaPDVa").selectedIndex = i;
+    				break;
+    			}
+			}
+		}
+	}
+	
+	function SelectElement(){
+		if(${session.idVrstePDVa} != null){
+			var options = document.getElementById("vrstaPDVa").children;
+			for (i = 0; i < options.length; i++) {
+    			if(options[i].value == ${session.idVrstePDVa}){
+    				document.getElementById("vrstaPDVa").selectedIndex = i;
+    				break;
+    			}
+			}
+
+			document.getElementById("vrstaPDVa").disabled = true;
+			document.getElementById("zoomBtn").disabled = true;
+		}else{
+			document.getElementById("vrstaPDVa").disabled = false;
+			document.getElementById("zoomBtn").disabled = false;
+		}
+	}
+
+	function remove(id){  <!-- ne znam koji je uanpred selektovani red , ovde se vrsi redirekcija -->
+		if(id == null){
+			alert("OznaÄ�ite red u tabeli!");
+		}else{
+			var r  = confirm("Da li želite da obrište slog?");
+			if(r == true) {
+		    	$(location).attr('href', '/StopePDVa/delete?id='+id);
+			}
+			else{
+				txt = "You pressed Cancel"
+			}
+		}
+	}
+	
+	function refresh_page(){
+		$(location).attr('href', '/StopePDVa/refresh');
+	}
+
+	$(function(){
+		$( "#stopaPDVa_datumKreiranja" ).datepicker();
+	});
+	
+	// modal Vrste PDVa
+	$(document).ready(function(){
+		$("#vrstaPDVaPickup").click(function(){
+			id = $(".highlighted").find(".p_id").html();
+			$("select").val(id);
+			$('#vrstePDVaModal').modal('toggle');
+		});
+	});
+	
+	function cancel_vrstePDVaModal(){
+		$('#vrstePDVaModal').modal('toggle');
+	}
+	
+	// povratak na nadredjenu formu
+	function pickup(){
+		$('#pickupModal').modal('show');
+	}
+	
+	function cancel_pickupModal(){
+		$('#pickupModal').modal('toggle');
+	}
+	
+	$(document).ready(function(){
+		$("#pickupPickup").click(function(){
+			nazivForme = $(".highlighted").find(".naziv_forme").html();
+			$('#pickupModal').modal('toggle');
+			
+			$(location).attr('href', '/StopePDVa/pickup?forma='+nazivForme);
+		});
+	});
+	
+</script>
+<div class="container-fluid">
+	<div class="row">
+		<div class="icon-bar">
+			<a href="#" onclick="openSideNav()"> <img width="16px"
+				height="16px" src="@{'/public/images/menu_icon.png'}" />
+				
+			</a> <a href="@{StopePDVa.changeMode(" search")}" id="search"> <img
+				src="@{'/public/images/search.gif'}" />
+				
+			</a> <a href="#" onclick="refresh_page()"> <img
+				src="@{'/public/images/refresh.gif'}" />
+				
+			</a> <a href="#" onclick="pickup()"> <img
+				src="@{'/public/images/zoom-pickup.gif'}" />
+				
+			</a> <a href="#" id="help"> <img src="@{'/public/images/help.gif'}" />
+			
+			</a> <a id="first"> <img src="@{'/public/images/first.gif'}" />
+			
+			</a> <a id="prev"> <img src="@{'/public/images/prev.gif'}" />
+			
+			</a> <a id="next"> <img src="@{'/public/images/next.gif'}" />
+			
+			</a> <a id="last"> <img src="@{'/public/images/last.gif'}" />
+			
+			<a href="@{StopePDVa.changeMode("add")}" id="add"> 
+				<img src="@{'/public/images/add.gif'}" />
+			</a>
+			<a href="#" id="remove"> <img
+				src="@{'/public/images/remove.gif'}" />
+				</a>
+		</div>
+
+		<div class="container-fluid">
+			<h1>Stope PDVa</h1>
+
+			<table>
+				<tr class="header">
+					<th>Datum kreiranja</th>
+					<th>Procenat PDVa</th>
+					<th>Vrsta PDVa</th>
+				</tr>
+				#{list items:stopePDVa, as:'stopaPDVa'}
+				<tr #{if stopaPDVa.id== idd} class="highlighted"#{/if} class="tableRow">
+					<td class="datumKreiranja">${stopaPDVa.datumKreiranja}</td>
+					<td class="procenatPDVa">${stopaPDVa.procenatPDVa}</td>
+					<td class="vrstaPDVa">${stopaPDVa.vrstaPDVa.nazivVrstePDva}</td>
+					<td style="visibility: hidden; max-width: 0px" class="id">${stopaPDVa.id}</td>
+				</tr>
+				#{/list}
+			</table>
+
+
+			#{set 'action'}
+				 #{if mode == 'add'}
+				 	 @{StopePDVa.create()}
+				 #{/if}
+				 #{elseif mode == 'edit'} 
+				 	 @{StopePDVa.edit()} 
+				 #{/elseif}
+				  #{else}
+					@{StopePDVa.filter()}
+				 #{/else} 
+			#{/set}
+
+			<div class="panel">
+				<form action=${action} method="post">
+				
+					<p>
+						#{field 'stopaPDVa.id'}
+						 <input type="hidden" name="${field.name}"
+							id="${field.id}" value="${session.idSPDVa}" />
+						 #{/}
+					</p>
+
+					<p>
+						#{field 'stopaPDVa.datumKreiranja'}
+					      	<label for = "${field.id}">Datum kreiranja</label>
+							<input type="text" name="${field.name}" id="${field.id}" readonly/>
+							<span>#{error field.name /}</span>
+						#{/}
+					</p>
+
+					<p>
+						#{field 'stopaPDVa.procenatPDVa'} 
+						<label for="${field.id}">Procenat PDVa</label> 
+						<input type="text" name="${field.name}" id="${field.id}"
+							value="${session.procenatSPDVa}" maxlength="2" size="2"/> 
+						<span>#{error field.name /}</span> 
+						#{/}
+					</p>
+
+					<p>
+						#{field 'vrstaPDVa'} <label for="${field.id}">VrstaPDVa</label>
+						&nbsp &nbsp &nbsp <select name="${field.name}" id="${field.id}">
+							#{list items:vrstePDVa, as:'vrstaPDVa'}
+							<option value="${vrstaPDVa.id}">${vrstaPDVa.nazivVrstePDva}</option>
+							#{/list}
+						</select>
+
+						<button id="zoomBtn" type="button" class="btn btn-info btn-sm"
+							data-toggle="modal" data-target="#vrstePDVaModal">...</button>
+						#{/}
+
+						<script>SelectElement()</script>
+					</p>
+
+					<div id="formActions">
+						<input type="submit" value="Potvrda" style="margin-left: 6em" class="btn btn-success" /> <a
+							href="@{StopePDVa.changeMode(" edit")}" style="margin-left: 1em">
+								<button type="button" class="btn btn-danger">Otkaži</button>
+							</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p class="status_line">Trenutni režim: ${session.mode}</p>
+
+<button onclick="topFunction()" id="myBtn" title="Idi na vrh">
+	<img src="@{'/public/images/back_top.png'}" alt=""
+		class="rounded-circle" width="40" height="40">
+</button>
+
+<!-- Modal Vrste PDVa -->
+<div class="modal fade" id="vrstePDVaModal" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">Vrste PDVa</div>
+
+			<div class="modal-body">
+				<table style="padding: 2em">
+					<tr class="header">
+						<th>Naziv vrste PDVa</th>
+
+					</tr>
+
+					#{list items:vrstePDVa, as:'vrstaPDVa'}
+					<tr #{if vrstaPDVa.id== idd} class="highlighted"#{/if}>
+						<td class="naziv">${vrstaPDVa.nazivVrstePDva}</td>
+
+						<td style="visibility: hidden; max-width: 0px" class="p_id">${vrstaPDVa.id}</td>
+					</tr>
+					#{/list}
+				</table>
+
+				<div class="modal-footer">
+					<input id="vrstaPDVaPickup" type="button" value="Izbor" class="btn btn-success"/>
+					<button type="button" class="btn btn-danger" onclick="cancel_vrstePDVaModal()">Otkaži</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--Povratak na nadredjenu formu modal-->
+<div class="modal fade" id="pickupModal" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">Izaberite nadređenu formu</div>
+
+			<div class="modal-body">
+				<table style="padding: 2em">
+					<tr class="header">
+						<th>Forma</th>
+					</tr>
+
+					#{list items:nadredjeneForme, as:'forma'}
+					<tr>
+						<td class = "naziv_forme">${forma}</td>
+					</tr>
+					#{/list}
+				</table>
+
+				<div class="modal-footer">
+					<input id="pickupPickup" type="button" value="Izbor" class="btn btn-success" />
+					<button type="button" class="btn btn-danger" onclick="cancel_pickupModal()">Otkaži</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

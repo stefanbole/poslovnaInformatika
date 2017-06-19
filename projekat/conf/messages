@@ -1,0 +1,11 @@
+# You can specialize this file for each language.
+# For example, for French create a messages.fr file
+#
+validation.required=%s je obavezno polje
+
+validation.maxSize=Maksimalna dužina %s polja je %d
+validation.minSize=Minimalna dužina %s polja je %d
+
+validation.unique=%s mora da bude jedinstveno
+
+validation.min = Minimalna vrednost %s je %d

@@ -1,0 +1,50 @@
+#{extends 'standardForm.html' /} #{set title:'Premium banka' /}
+<script>
+	function myMap() {
+		var mapProp = {
+			center : new google.maps.LatLng(45.246134, 19.8517514),
+			zoom : 15,
+		};
+		var map = new google.maps.Map(document.getElementById("googleMap"),
+				mapProp);
+
+		var marker = new google.maps.Marker({
+			position : new google.maps.LatLng(45.246134, 19.8517514),
+			map : map,
+			title : 'Tu smo!'
+		});
+	}
+</script>
+
+<div class="container">
+	<h2 class="featurette-heading" style="text-align: center;">Kako do
+		nas?</h2>
+	<div class="row">
+		<p>
+			Trg Dositeja Obradovića 6, 21101 Novi Sad <img
+				src="@{'/public/images/ftn.png'}" width="50%" align="right"> <br>E-mail:
+			ftndean@uns.ac.rs
+		</p>
+
+	</div>
+	<br> <br>
+	<div id="googleMap" style="width: auto; height: 400px;"></div>
+	<script
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDRzfPz6w6K-U9Rq0ncCbBNMqlXzSpZjA&callback=myMap"></script>
+	<br>
+
+	<!-- FOOTER -->
+	<footer class="container-fluid text-center">
+		<p>
+			&copy; 2017 Poslovna informatika, Inc. &middot; <a href="#">Privacy</a>
+			&middot; <a href="#">Terms</a>
+		</p>
+	</footer>
+
+	<button onclick="topFunction()" id="myBtn" title="Idi na vrh">
+		<img src="@{'/public/images/back_top.png'}" alt=""
+			class="rounded-circle" width="40" height="40">
+	</button>
+
+</div>
+

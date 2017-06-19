@@ -1,0 +1,199 @@
+#{extends 'standardForm.html' /}
+#{set title:'Vrste PDVa' /}
+
+<script>
+	function sync(item){
+		if ("${session.mode}" == "edit"){
+			nazivVrstePDva = item.find(".nazivVrstePDva").html()
+	    	id = item.find(".id").html()
+	    	$("#vrstaPDVa_nazivVrstePDva").val(nazivVrstePDva);
+	    	$("#vrstaPDVa_id").val(id);
+    	}
+	}
+
+	function remove(id){  <!-- ne znam koji je uanpred selektovani red , ovde se vrsi redirekcija -->
+		if(id == null){
+			alert("Označite red u tabeli!");
+		}else{
+			var r  = confirm("Da li želite da obrišete slog?");
+			if(r==true) {
+	    		$(location).attr('href', '/VrstePDVa/delete?id='+id);
+			}else{
+				txt = "You pressed Cancel"
+			}
+		}
+	}
+	
+	function refresh_page(){
+		$(location).attr('href', '/VrstaPDVa/refresh');
+	}
+
+	// nextForm
+	function nextform_func(id){
+		if(id==null){
+			alert("Označite red u tabeli!");
+		}else{
+			sessionStorage.setItem("selektovaniID",id);
+			$('#nextFormModal').modal('show');
+			//$(location).attr('href', '/VrstePDVa/nextForm?id='+id);
+		}	
+	}
+	
+	$(document).ready(function(){
+		$("#nextFormPickup").click(function(){
+			nazivForme = $(".highlighted").find(".naziv_forme").html();
+			
+			var idVrstePDVa = sessionStorage.getItem("selektovaniID");
+			
+			$('#nextFormModal').modal('toggle');
+			
+			$(location).attr('href', '/VrstePDVa/nextForm?id='+idVrstePDVa+'&forma='+nazivForme);
+		});
+	});
+	
+	function cancel_nextFormModal(){
+		$('#nextFormModal').modal('toggle');
+	}
+	
+</script>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="icon-bar">
+			<a href="#" onclick="openSideNav()">
+				<img width="16px" height="16px" src="@{'/public/images/menu_icon.png'}" />
+			</a>
+			
+			<a href="@{VrstePDVa.show("search")}" id = "search">
+				<img src="@{'/public/images/search.gif'}"/>
+			</a>
+			
+			<a href="@{VrstePDVa.show("edit")}" id = "refresh">
+				<img src="@{'/public/images/refresh.gif'}"/>
+			</a>
+			
+			<a href="#" id = "help">
+				<img src="@{'/public/images/help.gif'}"/>
+			</a>
+			
+			<a id = "first">
+				<img src="@{'/public/images/first.gif'}"/>
+			</a>
+
+			<a id = "prev">
+				<img src="@{'/public/images/prev.gif'}"/>
+			</a>
+
+			<a id = "next">
+				<img src="@{'/public/images/next.gif'}"/>
+			</a>
+
+			<a id = "last">
+				<img src="@{'/public/images/last.gif'}"/>
+			</a>
+			
+			<a href="@{VrstePDVa.show("add")}" id = "add">
+				<img src="@{'/public/images/add.gif'}"/>
+			</a>
+			
+			<a href="#" id = "remove">
+				<img src="@{'/public/images/remove.gif'}"/>
+			</a>
+			
+			<a href="#" id = "nextform">
+				<img src="@{'/public/images/nextform.gif'}"/>
+			</a>
+		</div>
+
+		<div class="container-fluid">
+			<h1>Vrste PDVa</h1>
+
+			<table>
+				<tr class = "header">
+	   				<th>Naziv</th>
+				</tr>
+				
+				#{list items:vrstePDVa, as:'vrstaPDVa'}
+				<tr #{if vrstaPDVa.id == idd} class = "highlighted" #{/if} class="tableRow">
+					<td class = "nazivVrstePDva">${vrstaPDVa.nazivVrstePDva}</td>
+					<td style = "visibility: hidden; max-width: 0px" class = "id">${vrstaPDVa.id}</td>
+				</tr>
+				#{/list}
+			</table>
+
+			#{set 'action'}
+    			#{if mode == 'add'}
+        			@{VrstePDVa.create()}
+   				#{/if}
+   				#{elseif mode == 'edit'}
+       				@{VrstePDVa.edit()}
+   				#{/elseif}
+  	   	    	#{else}
+     	        	@{VrstePDVa.filter()}
+  	        	#{/else}
+ 	    	#{/set}
+ 	
+			<div class="panel">
+				<form action=${action} method="post">  <!-- umesto Drzave.show --> 
+					<p>
+						#{field 'vrstaPDVa.id'}
+							<input type = "hidden" name = "${field.name}" id = "${field.id}" value="${session.idVPDVa}"/>
+						#{/}
+					</p>
+
+					<p>
+						#{field 'vrstaPDVa.nazivVrstePDva'}
+							<label for = "${field.id}">Naziv</label>
+							<input type = "text" value="${session.nazivVPDVa}" name = "${field.name}" id = "${field.id}" maxlength="40" size="40"/>
+							<span>#{error field.name /}</span> 
+						#{/}
+					</p>
+					
+					<div id = "formActions">
+						<input type = "submit" value = "Potvrda" style="margin-left:6em" class="btn btn-success"/>
+						<a href = "@{VrstePDVa.show("edit")}" style="margin-left:1em">
+							<button type="button" class="btn btn-danger">Otkaži</button>
+						</a>
+					</div>				
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p class="status_line">Trenutni režim: ${session.mode}</p>
+
+<button onclick="topFunction()" id="myBtn" title="Idi na vrh">
+	<img src="@{'/public/images/back_top.png'}" alt=""
+		class="rounded-circle" width="40" height="40">
+</button>
+
+<!--NextForm-->
+<div class="modal fade" id="nextFormModal" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">Izaberite sledeću formu</div>
+
+			<div class="modal-body">
+				<table style="padding: 2em">
+					<tr class="header">
+						<th>Forma</th>
+					</tr>
+
+					#{list items:povezaneForme, as:'forma'}
+					<tr>
+						<td class = "naziv_forme">${forma}</td>
+					</tr>
+					#{/list}
+				</table>
+
+				<div class="modal-footer">
+					<input id="nextFormPickup" type="button" value="Izbor" class="btn btn-success"/>
+					<button type="button" class="btn btn-danger" onclick="cancel_nextFormModal()">Otkaži</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+

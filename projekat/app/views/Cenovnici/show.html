@@ -1,0 +1,301 @@
+#{extends 'standardForm.html' /}
+#{set title:'Cenovnici' /}
+
+
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+
+<script>
+	function sync(item){
+		if ("${session.mode}" == "edit"){
+	    	naziv = item.find(".naziv").html()
+	    	datumVazenja = item.find(".datumVazenja").html()
+	    	id = item.find(".id").html()
+	    	$("#cenovnik_naziv").val(naziv);
+	    	$("#cenovnik_datumVazenja").val(datumVazenja);
+	    	$("#cenovnik_id").val(id);
+    	}
+	}
+
+	function remove(id){  <!-- ne znam koji je uanpred selektovani red , ovde se vrsi redirekcija -->
+		if(id == null){
+			alert("Označite red u tabeli!");
+		}else{
+			var r  = confirm("Da li želite da obrišete slog?");
+			if(r==true) {
+	    		$(location).attr('href', '/Cenovnici/delete?id='+id);
+			}else{
+				txt = "You pressed Cancel"
+			}
+		}
+	}
+
+	function nextform_func(id){
+		if(id==null){
+			alert("Označite red u tabeli!");
+		}else{
+			sessionStorage.setItem("selektovaniID",id);
+			$('#nextFormModal').modal('show');
+		}	
+	}
+	
+	 $(document).ready(function(){
+		$("#nextFormPickup").click(function(){
+			nazivForme = $(".highlighted").find(".naziv_forme").html();
+			
+			var idCenovnika = sessionStorage.getItem("selektovaniID");
+			
+			$('#nextFormModal').modal('toggle');
+			
+			$(location).attr('href', '/Cenovnici/nextForm?id='+idCenovnika+'&forma='+nazivForme);
+		});
+	});
+	
+	function cancel_nextModal(){
+		$('#nextFormModal').modal('toggle');
+	}
+	
+	
+	// kopiranje cenonvika
+	function copy_func(id){
+		if(id==null){
+			alert("Označite red u tabeli!");
+		}else{
+			sessionStorage.setItem("selektovaniID",id);
+			document.getElementById("cenovnikCopy_id").value = id;
+			$('#copyModal').modal('show');
+		}
+	}
+	
+	$(document).ready(function(){
+		$("#copyPickup").click(function(){
+			var id = document.getElementById("cenovnikCopy_id").value;
+			var datumVazenja = document.getElementById("cenovnikCopy_datumVazenja").value;
+			var procenat = document.getElementById("procenat").value;
+			var promena = document.querySelector('input[name = "promena"]:checked').value;
+		
+			$('#copyModal').modal('toggle');
+			
+			$(location).attr('href', '/Cenovnici/copy?id='+id+'&datumVazenja='+datumVazenja+'&procenat='+procenat+'&promena='+promena);
+		});
+	});
+	
+	function cancel_modal(){
+   		$('#copyModal').modal('toggle');
+	}
+
+	function refresh_page(){
+		$(location).attr('href', '/Cenovnici/refresh');
+	}
+	
+	$(function(){
+		$( "#cenovnik_datumVazenja" ).datepicker();
+	});
+	
+	$(function(){
+		$( "#cenovnikCopy_datumVazenja" ).datepicker();
+	});
+
+</script>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="icon-bar">
+			<a href="#" onclick="openSideNav()">
+				<img width="16px" height="16px" src="@{'/public/images/menu_icon.png'}" />
+			</a>
+			
+			<a href="@{Cenovnici.show("search")}" id = "search">
+				<img src="@{'/public/images/search.gif'}"/>
+			</a>
+			
+			<a href="@{Cenovnici.show("edit")}" id = "refresh">
+				<img src="@{'/public/images/refresh.gif'}"/>
+			</a>
+			
+			<a href="#" id = "help">
+				<img src="@{'/public/images/help.gif'}"/>
+			</a>
+			
+			<a id = "first">
+				<img src="@{'/public/images/first.gif'}"/>
+			</a>
+
+			<a id = "prev">
+				<img src="@{'/public/images/prev.gif'}"/>
+			</a>
+
+			<a id = "next">
+				<img src="@{'/public/images/next.gif'}"/>
+			</a>
+
+			<a id = "last">
+				<img src="@{'/public/images/last.gif'}"/>
+			</a>
+			
+			<a href="@{Cenovnici.show("add")}" id = "add">
+				<img src="@{'/public/images/add.gif'}"/>
+			</a>
+			
+			<a href="#" id = "remove">
+				<img src="@{'/public/images/remove.gif'}"/>
+			</a>
+			
+			<a href="#" id = "copy">
+				<img src="@{'/public/images/copy.gif'}"/>
+			</a>
+			
+			<a href="#" id = "nextform">
+				<img src="@{'/public/images/nextform.gif'}"/>
+			</a>
+		</div>
+
+		<div class="container-fluid">
+			<h1>Cenovnici</h1>
+
+			<table>
+				<tr class = "header">
+	   				<th>Naziv</th>
+	   				<th>Datum</th>
+				</tr>
+				
+				#{list items:cenovnici, as:'cenovnik'}
+				<tr #{if cenovnik.id == idd} class = "highlighted" #{/if} class="tableRow">
+					<td class = "naziv">${cenovnik.naziv}</td>
+					<td class = "datumVazenja">${cenovnik.datumVazenja}</td>
+					<td style = "visibility: hidden; max-width: 0px" class = "id">${cenovnik.id}</td>
+				</tr>
+				#{/list}
+			</table>
+
+			#{set 'action'}
+    			#{if mode == 'add'}
+        			@{Cenovnici.create()}
+   				#{/if}
+   				#{elseif mode == 'edit'}
+       				@{Cenovnici.edit()}
+   				#{/elseif}
+  	   	    	#{else}
+     	        	@{Cenovnici.filter()}
+  	        	#{/else}
+ 	    	#{/set}
+ 	
+			<div class="panel">
+				<form action=${action} method="post"> 
+					<p>
+						#{field 'cenovnik.id'}
+							<input type = "hidden" name = "${field.name}" id = "${field.id}" value="${session.idCen}"/>
+						#{/}
+					</p>
+				
+					<p>
+						#{field 'cenovnik.naziv'} 
+							<label for = "${field.id}">Naziv</label>
+							<input type = "text" name = "${field.name}" id = "${field.id}" maxlength="40" size="40" value="${session.nazivCenovnik}"/>
+							<span>#{error field.name /}</span>
+						#{/}
+					</p>
+				
+					<p>
+						#{field 'cenovnik.datumVazenja'}
+					      	<label for = "${field.id}">Datum važenja</label>
+							<input type="text" name="${field.name}" id="${field.id}" readonly/>
+							<span>#{error field.name /}</span>
+						#{/}
+					</p>
+					
+					<div id = "formActions">
+						<input type = "submit" value = "Potvrda" style="margin-left:6em" class="btn btn-success"/>
+						<a href = "@{Cenovnici.show("edit")}" style="margin-left:1em">
+							<button type="button" class="btn btn-danger">Otkaži</button>
+						</a>
+					</div>				
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p class="status_line">Trenutni režim: ${session.mode}</p>
+
+<button onclick="topFunction()" id="myBtn" title="Idi na vrh">
+	<img src="@{'/public/images/back_top.png'}" alt=""
+		class="rounded-circle" width="40" height="40">
+</button>
+
+<div class="modal fade" id="nextFormModal" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">Izaberite sledeću formu</div>
+
+			<div class="modal-body">
+				<table style="padding: 2em">
+					<tr class="header">
+						<th>Forma</th>
+					</tr>
+
+					#{list items:povezaneForme, as:'forma'}
+					<tr>
+						<td class = "naziv_forme">${forma}</td>
+					</tr>
+					#{/list}
+				</table>
+
+				<div class="modal-footer">
+					<input id="nextFormPickup" type="button" value="Izbor" class="btn btn-success" />
+					<button type="button" class="btn btn-danger" onclick="cancel_nextModal()">Otkaži</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--Copy modal-->
+<div class="modal fade" id="copyModal" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">Unesite podatke</div>
+
+			<div class="modal-body">
+				<form action=@{Cenovnici.copy(procenat,promena)} method="post"> 
+				
+					<p>
+						#{field 'cenovnikCopy.id'}
+							<input type = "hidden"  name = "${field.name}" id = "${field.id}"/>
+						#{/}
+					</p>
+				
+					<p>
+						#{field 'cenovnikCopy.datumVazenja'}
+					      	<label for = "${field.id}">Datum važenja</label>
+							<input type="text" name="${field.name}" id="${field.id}"/>
+						#{/}
+					</p>
+					
+					<p>
+						#{field 'procenat'} 
+							<label for = "${field.id}">Procenat</label>
+							<input type = "text" name = "${field.name}" id = "${field.id}" maxlength="4" size="4"/>
+						#{/}
+					</p>
+					
+					<p>
+						#{field 'promena'} 
+							<label for = "${field.id}">Promena</label>
+							<input type="radio" name="${field.name}" id="${field.id}P" value="P" checked> Povećanje
+  							<input type="radio" name="${field.name}" id="${field.id}S" value="S"> Smanjenje<br>
+						#{/}
+					</p>
+									
+				</form>
+
+				<div class="modal-footer">
+					<input id="copyPickup" type="button" value="izbor" class="btn btn-success" />
+					<button type="button" class="btn btn-danger" onclick="cancel_modal()">Otkaži</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

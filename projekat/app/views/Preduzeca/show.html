@@ -1,0 +1,280 @@
+#{extends 'standardForm.html' /}
+#{set title:'Preduzeća' /}
+
+<script>
+	$(document).ready(function(){
+		$("#nextFormPickup").click(function(){
+			nazivForme = $(".highlighted").find(".naziv_forme").html();
+			
+			var idPreduzeca = sessionStorage.getItem("selektovaniID");
+			
+			$('#nextFormModal').modal('toggle');
+			
+			$(location).attr('href', '/Preduzeca/nextForm?id='+idPreduzeca+'&forma='+nazivForme);
+		});
+	});
+
+	function sync(item){
+		if ("${session.mode}" == "edit"){
+	    	naziv = item.find(".naziv").html()
+	    	pib = item.find(".pib").html()
+	    	mesto = item.find(".mesto").html()
+	    	adresa = item.find(".adresa").html()
+	    	telefon = item.find(".telefon").html()
+	    	maticniBroj = item.find(".maticniBroj").html()
+	    	tekuciRacun = item.find(".tekuciRacun").html()
+	    	id = item.find(".id").html()
+	    	$("#preduzece_naziv").val(naziv);
+	    	$("#preduzece_pib").val(pib);
+	    	$("#preduzece_mesto").val(mesto);
+	    	$("#preduzece_adresa").val(adresa);
+	    	$("#preduzece_telefon").val(telefon);
+	    	$("#preduzece_maticniBroj").val(maticniBroj);
+	    	$("#preduzece_tekuciRacun").val(tekuciRacun);
+	    	$("#preduzece_id").val(id);
+    	}
+	}
+
+	function remove(id){  <!-- ne znam koji je uanpred selektovani red , ovde se vrsi redirekcija -->
+		if(id == null){
+			alert("OznaÄ�ite red u tabeli!");
+		}else{
+			var r  = confirm("Da li želite da obrišete slog?");
+			if(r==true) {
+	    		$(location).attr('href', '/Preduzeca/delete?id='+id);
+			}else{
+				txt = "You pressed Cancel"
+			}
+		}
+	}
+
+	// nextForm modal
+	function nextform_func(id){
+		if(id==null){
+			alert("Označite red u tabeli!");
+		}else{
+			sessionStorage.setItem("selektovaniID",id);
+			$('#nextFormModal').modal('show');
+		}	
+	}
+	
+	function cancel_modal(){
+   		$('#nextFormModal').modal('toggle');
+	}
+	
+	//dnevnik izlaznih faktura
+	function kupovinaProdaja_func(id){
+		if(id==null){
+			alert("Označite red u tabeli!");
+		}else{
+			$(location).attr('href', '/Preduzeca/exportToPdf?id='+id);
+		}	
+	}
+
+	function refresh_page(){
+		$(location).attr('href', '/Preduzeca/refresh');
+	}
+	
+</script>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="icon-bar">
+			<a href="#" onclick="openSideNav()">
+				<img width="16px" height="16px" src="@{'/public/images/menu_icon.png'}" />
+			</a>
+			
+<!-- 			<a href="@{Preduzeca.show("search")}" id = "search"> -->
+<!-- 				<img src="@{'/public/images/search.gif'}"/> -->
+<!-- 			</a> -->
+			
+<!-- 			<a href="@{Preduzeca.show("edit")}" id = "refresh"> -->
+<!-- 				<img src="@{'/public/images/refresh.gif'}"/> -->
+<!-- 			</a> -->
+			
+			<a href="#" id = "help">
+				<img src="@{'/public/images/help.gif'}"/>
+			</a>
+			
+			<a id = "first">
+				<img src="@{'/public/images/first.gif'}"/>
+			</a>
+
+			<a id = "prev">
+				<img src="@{'/public/images/prev.gif'}"/>
+			</a>
+
+			<a id = "next">
+				<img src="@{'/public/images/next.gif'}"/>
+			</a>
+
+			<a id = "last">
+				<img src="@{'/public/images/last.gif'}"/>
+			</a>
+			
+<!-- 			<a href="@{Preduzeca.show("add")}" id = "add"> -->
+<!-- 				<img src="@{'/public/images/add.gif'}"/> -->
+<!-- 			</a> -->
+			
+<!-- 			<a href="#" id = "remove"> -->
+<!-- 				<img src="@{'/public/images/remove.gif'}"/> -->
+<!-- 			</a> -->
+			
+			<a href="#" id = "nextform">
+				<img src="@{'/public/images/nextform.gif'}"/>
+			</a>
+			
+			<a id = "kupovinaProdaja">
+				<img src="@{'/public/images/message_send.png'}" width="23px" height="23px"/>
+			</a>
+		</div>
+
+		<div class="container-fluid">
+			<h1>Preduzeća</h1>
+
+			<table>
+				<tr class = "header">
+	   				<th>Naziv</th>
+	   				<th>PIB</th>
+	   				<th>Mesto</th>
+	   				<th>Adresa</th>
+	   				<th>Matični broj</th>
+	   				<th>Tekući račun</th>
+				</tr>
+				
+				#{list items:preduzeca, as:'preduzece'}
+				<tr #{if preduzece.id == idd} class = "highlighted" #{/if} class="tableRow">
+					<td class = "naziv">${preduzece.naziv}</td>
+					<td class = "pib">${preduzece.pib}</td>
+					<td class = "mesto">${preduzece.mesto}</td>
+					<td class = "adresa">${preduzece.adresa}</td>
+					<td class = "maticniBroj">${preduzece.maticniBroj}</td>
+					<td class = "tekuciRacun">${preduzece.tekuciRacun}</td>
+					<td style = "visibility: hidden; max-width: 0px" class = "id">${preduzece.id}</td>
+				</tr>
+				#{/list}
+			</table>
+
+<!-- 			#{set 'action'} -->
+<!--     			#{if mode == 'add'} -->
+<!--         			@{Preduzeca.create()} -->
+<!--    				#{/if} -->
+<!--    				#{elseif mode == 'edit'} -->
+<!--        				@{Preduzeca.edit()} -->
+<!--    				#{/elseif} -->
+<!--   	   	    	#{else} -->
+<!--      	        	@{Preduzeca.filter()} -->
+<!--   	        	#{/else} -->
+<!--  	    	#{/set} -->
+ 	
+<!-- 			<div class="panel"> -->
+<!-- 				<form action=${action} method="post">  -->
+<!-- 					<p> -->
+<!-- 						#{field 'preduzece.id'} -->
+<!-- 							<input type = "hidden" value="${session.idPred}" name = "${field.name}" id = "${field.id}"/> -->
+<!-- 						#{/} -->
+<!-- 					</p> -->
+				
+<!-- 					<p> -->
+<!-- 						#{field 'preduzece.naziv'}  -->
+<!-- 							<label for = "${field.id}">Naziv</label> -->
+<!-- 							<input type = "text" value="${session.nazivPred}" name = "${field.name}" id = "${field.id}"/> -->
+<!-- 							<span>#{error field.name /}</span> -->
+<!-- 						#{/} -->
+<!-- 					</p> -->
+				
+<!-- 					<p> -->
+<!-- 						#{field 'preduzece.pib'} -->
+<!-- 							<label for = "${field.id}">PIB</label> -->
+<!-- 							<input type = "text" value="${session.pibPred}" name = "${field.name}" id = "${field.id}" maxlength="8" size="8"/> -->
+<!-- 							<span>#{error field.name /}</span> -->
+<!-- 						#{/} -->
+<!-- 					</p> -->
+					
+<!-- 					<p> -->
+<!-- 						#{field 'preduzece.mesto'} -->
+<!-- 							<label for = "${field.id}">Mesto</label> -->
+<!-- 							<input type = "text" value="${session.mestoPred}" name = "${field.name}" id = "${field.id}" maxlength="40" size="40"/> -->
+<!-- 							<span>#{error field.name /}</span> -->
+<!-- 						#{/} -->
+<!-- 					</p> -->
+					
+<!-- 					<p> -->
+<!-- 						#{field 'preduzece.adresa'} -->
+<!-- 							<label for = "${field.id}">Adresa</label> -->
+<!-- 							<input type = "text" value="${session.adresaPred}" name = "${field.name}" id = "${field.id}" maxlength="40" size="40"/> -->
+<!-- 							<span>#{error field.name /}</span> -->
+<!-- 						#{/} -->
+<!-- 					</p> -->
+					
+<!-- 					<p> -->
+<!-- 						#{field 'preduzece.telefon'} -->
+<!-- 							<label for = "${field.id}">Telefon</label> -->
+<!-- 							<input type = "text" value="${session.telefonPred}" name = "${field.name}" id = "${field.id}" maxlength="15" size="15"/> -->
+<!-- 							<span>#{error field.name /}</span> -->
+<!-- 						#{/} -->
+<!-- 					</p> -->
+					
+<!-- 					<p> -->
+<!-- 						#{field 'preduzece.maticniBroj'} -->
+<!-- 							<label for = "${field.id}">MatiÄ�ni broj</label> -->
+<!-- 							<input type = "text" value="${session.maticniBrojPred}" name = "${field.name}" id = "${field.id}" maxlength="13" size="13"/> -->
+<!-- 							<span>#{error field.name /}</span> -->
+<!-- 						#{/} -->
+<!-- 					</p> -->
+					
+<!-- 					<p> -->
+<!-- 						#{field 'preduzece.tekuciRacun'} -->
+<!-- 							<label for = "${field.id}">TekuÄ‡i raÄ�un</label> -->
+<!-- 							<input type = "text" value="${session.tekuciRacunPred}" name = "${field.name}" id = "${field.id}" maxlength="18" size="18"/> -->
+<!-- 							<span>#{error field.name /}</span> -->
+<!-- 						#{/} -->
+<!-- 					</p> -->
+					
+<!-- 					<div id = "formActions"> -->
+<!-- 						<input type = "submit" value = "Potvrda" style="margin-left:6em" class="btn btn-success"/> -->
+<!-- 						<a href = "@{Preduzeca.show("edit")}" style="margin-left:1em"> -->
+<!-- 							<button type="button" class="btn btn-danger">OtkaÅ¾i</button> -->
+<!-- 						</a> -->
+<!-- 					</div>				 -->
+<!-- 				</form> -->
+			</div>
+		</div>
+	</div>
+</div>
+
+<p class="status_line">Trenutni režim: ${session.mode}</p>
+
+<button onclick="topFunction()" id="myBtn" title="Idi na vrh">
+	<img src="@{'/public/images/back_top.png'}" alt=""
+		class="rounded-circle" width="40" height="40">
+</button>
+
+<div class="modal fade" id="nextFormModal" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">Izaberite sledeću formu</div>
+
+			<div class="modal-body">
+				<table style="padding: 2em">
+					<tr class="header">
+						<th>Forma</th>
+					</tr>
+
+					#{list items:povezaneForme, as:'forma'}
+					<tr>
+						<td class = "naziv_forme">${forma}</td>
+					</tr>
+					#{/list}
+				</table>
+
+				<div class="modal-footer">
+					<input id="nextFormPickup" type="button" value="Izbor" class="btn btn-success"/>
+					<button type="button" class="btn btn-danger" onclick="cancel_modal()">Otkaži</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>						
+

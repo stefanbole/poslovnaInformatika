@@ -1,0 +1,457 @@
+#{extends 'standardForm.html' /}
+#{set title:'Stavke narudzbe' /}
+
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+
+<script type="text/javascript">
+
+	function sync(item){
+		if ("${session.mode}" == "edit"){
+			var kolicina = item.find(".kolicina").html();
+			$("#stavkaNarudzbe_kolicina").val(kolicina);
+			
+			katalogRobeIUsluga = item.find(".katalogRobeIUsluga").html()
+			narudzba = item.find(".narudzba").html()
+			id = item.find(".id").html()
+			console.log(id);
+			console.log(kolicina);
+			var options = document.getElementById("katalogRobeIUsluga").children;
+			for (i = 0; i < options.length; i++) { 
+				if(options[i].label == katalogRobeIUsluga){
+					document.getElementById("katalogRobeIUsluga").selectedIndex = i;
+					break;
+				}
+			}
+			
+			var options = document.getElementById("narudzba").children;
+			for (i = 0; i < options.length; i++) { 
+				if(options[i].label == narudzba){
+					document.getElementById("narudzba").selectedIndex = i;
+					break;
+				}
+			}
+		}
+	}
+
+	function SelectElement(){
+		if(${session.idKataloga} != null){
+			var options = document.getElementById("katalogRobeIUsluga").children;
+			for (i = 0; i < options.length; i++) {
+				if(options[i].value == ${session.idKataloga}){
+					document.getElementById("katalogRobeIUsluga").selectedIndex = i;
+					break;
+				}
+			}
+	
+			document.getElementById("katalogRobeIUsluga").disabled = true;
+			document.getElementById("zoomBtn").disabled = true;
+		}
+		else{
+			document.getElementById("katalogRobeIUsluga").disabled = false;
+			document.getElementById("zoomBtn").disabled = false;
+			}
+	}
+
+
+function SelectElementNarudzba(){
+	if(${session.idNarudzbe} != null){
+		console.log(${session.idNarudzbe});
+		var options = document.getElementById("narudzba").children;
+		for (i = 0; i < options.length; i++) {
+			if(options[i].value == ${session.idNarudzbe}){
+				document.getElementById("narudzba").selectedIndex = i;
+				break;
+			}
+		}
+
+		document.getElementById("narudzba").disabled = true;
+		document.getElementById("zoomBtnNarudzba").disabled = true;
+	}else{
+			document.getElementById("narudzba").disabled = false;
+			document.getElementById("zoomBtnNarudzba").disabled = false;
+		}
+	}
+
+function Fakturisana(){
+	if(${session.fakturisna} == ${session.idNarudzbe}){
+		document.getElementById("Potvrdi").disabled = true;
+	}
+	else {
+		document.getElementById("Potvrdi").disabled = false;
+		}
+	}
+
+
+function remove(id){  <!-- ne znam koji je uanpred selektovani red , ovde se vrsi redirekcija -->
+	if(id == null){
+		alert("Ozncite red u tabeli!");
+	}else{
+		var r  = confirm("Da li zelite da obrišete red?");
+		if(r == true) {
+	    	$(location).attr('href', '/StavkeNarudzbe/delete?id='+id);
+		}
+		else{
+			txt = "You pressed Cancel"
+			}
+		}
+	}
+
+function refresh_page(){
+	$(location).attr('href', '/StavkeNarudzbe/refresh');
+}
+
+$(document).ready(function(){
+	$("#izborPickup").click(function(){
+		id = $(".highlighted").find(".izbor_id").html();
+		$("select").val(id);
+		$('#modalDialog').modal('toggle');
+	});
+});
+
+function cancel_katalogModal(){
+	$('#modalDialog').modal('toggle');
+}
+
+
+
+function pickup(){
+	$('#pickupModal').modal('show');
+}
+
+function cancel_pickupModal(){
+	$('#pickupModal').modal('toggle');
+}
+
+$(document).ready(function(){
+	$("#pickupPickup").click(function(){
+		nazivForme = $(".highlighted").find(".naziv_forme").html();
+		$('#pickupModal').modal('toggle');
+		
+		$(location).attr('href', '/StavkeNarudzbe/pickup?forma='+nazivForme);
+	});
+});
+
+
+
+
+</script>
+
+<div class="container-fluid">
+	<div class="row">
+	
+	<div class="icon-bar">
+			
+
+			<a href="@{StavkeNarudzbe.changeMode("search")}" id="search">
+				<img src="@{'/public/images/search.gif'}" />
+			</a> 
+			
+			<a href="#" onclick="refresh_page()"> 
+				<img src="@{'/public/images/refresh.gif'}" />
+			</a> 
+			
+			<a href="#" onclick="pickup()"> 
+				<img src="@{'/public/images/zoom-pickup.gif'}" />
+			</a> 
+			
+			<a href="#" id="help"> 
+				<img src="@{'/public/images/help.gif'}" />
+			</a> 
+			
+			<a id="first"> 
+				<img src="@{'/public/images/first.gif'}" />
+			</a> 
+			
+			<a id="prev"> 
+				<img src="@{'/public/images/prev.gif'}" />
+			</a> 
+			
+			<a id="next"> 
+				<img src="@{'/public/images/next.gif'}" />
+			</a> 
+			
+			<a id="last"> 
+				<img src="@{'/public/images/last.gif'}" />
+			</a> 
+			
+			<a href="@{StavkeNarudzbe.changeMode("add")}" id="add"> 
+				<img src="@{'/public/images/add.gif'}" />
+			</a>
+			
+			<a href="#" id="remove"> 
+				<img src="@{'/public/images/remove.gif'}" />
+			</a> 
+			
+			<a href="@{StavkeNarudzbe.saveStavke}" id="done"> 
+				<img src="@{'/public/images/stavke_fakture_done.png'}" width="22px" height="22px"/>
+			</a> 
+		</div>
+		
+		<div class = "container-fluid">
+			<h1>Stavke narudzbe</h1>
+			
+			<table>
+				<tr class = "header">
+	   				<th>Cena</th> 
+	   				<th>Kolicina</th>
+	   				<th>Osnovica za PDV</th>
+	   				<th>Stopa PDVa</th>
+	   				<th>Iznos PDVa</th>
+	   				<th>Ukupno</th>
+	   				<th>Katalog robe i usluga</th>
+	   				
+				</tr>
+				#{list items:stavkeNarudzbe, as:'stavkaNarudzba'}
+					<tr  class="tableRow">
+						<td class="sn_cena">${stavkaNarudzba.cena}</td>
+						<td class="kolicina">${stavkaNarudzba.kolicina}</td>
+						<td class="osnovicaZaPDV">${stavkaNarudzba.osnovicaZaPDV}</td>
+						<td class="stopaPDVa">${stavkaNarudzba.stopaPDVa}</td>
+						<td class="iznosPDVa">${stavkaNarudzba.iznosPDVa}</td>
+						<td class="ukupno">${stavkaNarudzba.ukupno}</td>
+						<td class="katalogRobeIUsluga">${stavkaNarudzba.katalogRobeIUsluga.nazivStavkeKataloga}</td>
+						<td style="visibility: hidden; max-width: 0px" class="id">${stavkaNarudzba.id}</td>
+					</tr>
+				#{/list}
+			</table>
+			
+			
+		
+		
+			#{set 'action'}
+				    #{if mode == 'add'}
+				        @{StavkeNarudzbe.create()}
+				    #{/if}
+				    #{elseif mode == 'edit'}
+				        @{StavkeNarudzbe.edit()}
+				    #{/elseif}
+				    #{else}
+				       @{StavkeNarudzbe.filter()}
+				    #{/else}
+			 #{/set}
+			
+			<div class="panel">
+				<form action=${action} method="post">
+					<p>
+						#{field 'stavkaNarudzbe.id'} 
+							<input type="hidden" name="${field.name}" id="${field.id}" value="${session.idSN}" />
+						#{/}
+					</p>
+					
+					<p>
+						#{field 'stavkaNarudzbe.kolicina'} 
+						<label for="${field.id}"> Količina </label>
+							<input type="text" name="${field.name}" id="${field.id}" value="${session.kolicina}" />
+							<span>#{error field.name /}</span>
+						#{/}
+					</p>
+					
+					<p>
+						#{field 'katalogRobeIUsluga'}
+						<label for = "${field.id}">Naziv stavke</label>
+						&nbsp &nbsp &nbsp
+							<select name = "${field.name}" id = "${field.id}">
+								#{list items:kataloziRobeIUsluga, as:'katalogRobeIUsluga'}
+									<option value = "${katalogRobeIUsluga.id}">${katalogRobeIUsluga.nazivStavkeKataloga}</option>
+								#{/list}
+							</select>
+									
+							<button id = "zoomBtn" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modalDialog">...	</button>
+						#{/}
+								
+						<script>SelectElement()</script>
+					</p>
+					
+					<p>
+					
+				
+						#{field 'narudzba'} 
+							<label for="${field.id}">Narudzba</label>
+							&nbsp &nbsp &nbsp
+								<select name = "${field.name}" id = "${field.id}">
+									#{list items:narudzbe, as:'narudzba'}
+										<option value = "${narudzba.id}">${narudzba.brojNarudzbe}</option>
+									#{/list}
+								</select>
+									
+								<button id = "zoomBtnNarudzba" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modalDialogNarudzba">...	</button>
+						#{/}
+								
+						<script> 
+							window.SelectElementNarudzba();
+								
+							</script>
+							
+									
+					</p>
+					<div id = "formActions">
+							<input type = "submit" id="Potvrdi" value = "Potvrda" style="margin-left:6em" class="btn btn-success"/>
+							<a href = "@{StavkeNarudzbe.changeMode("edit")}" style="margin-left:1em">
+								<button type="button" class="btn btn-danger">Otkazi</button>
+							</a>
+							
+							<script> window.Fakturisana(); </script>
+					</div>	
+				</form>
+			</div>
+		</div>
+	
+	</div>
+</div>
+
+
+<p class="status_line">Trenutni rezim: ${session.mode}</p>
+
+<button onclick="topFunction()" id="myBtn" title="Idi na vrh">
+	<img src="@{'/public/images/back_top.png'}" alt=""
+		class="rounded-circle" width="40" height="40">
+</button>
+
+
+<!-- Modal Faktura -->
+<div class="modal fade" id="modalDialogNarudzbe" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				Narudzbe
+			</div>
+			
+      		<div class="modal-body">
+	    		<table style = "padding:2em">
+					<tr class = "header">
+		   				<th>Datum narudzbe</th>
+		   				<th>Broj narudzbe</th>
+		   				<th>Datum valute</th>
+		   				<th>Ukupno osnovica</th>
+		   				<th>Ukupno PDV</th>
+		   				<th>Ukupno za placanje</th>
+		   				<th>Preduzece</th>
+					</tr>
+					
+					#{list narudzbe, as:'narudzba'}
+						<tr >
+							<td class = "datumNarudzbe">${narudzba.datumNarudzbe}</td>
+							<td class = "brojNarudzbe">${narudzba.brojNarudzbe}</td>
+							<td class = "datumValute">${narudzba.datumValute}</td>
+							<td class = "ukupnoOsnovica">${narudzba.ukupnoOsnovica}</td>
+							<td class = "ukupnoPDV">${narudzba.ukupnoPDV}</td>
+							<td class = "ukupnoZaPlacanje">${narudzba.ukupnoZaPlacanje}</td>
+							<td class="preduzece">${narudzba.preduzece.naziv}</td>
+							<td style = "visibility: hidden; max-width: 0px" class = "izbor_id">${narudzba.id}</td>
+						</tr>
+					#{/list}
+				</table>
+				
+				<div class="modal-footer">
+					<input id = "izborPickupNarudzba" type = "button" value = "Izbor" class="btn btn-success"/>
+					<button type="button" class="btn btn-danger" onclick="cancel_narudzbaModal()">Otkazi</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal Katalog Robe i Usluga -->
+<div class="modal fade" id="modalDialog" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				Katalozi robe i usluga
+			</div>
+			
+      		<div class="modal-body">
+	    		<table style = "padding:2em">
+					<tr class = "header">
+		   				<th>Naziv stavke kataloga</th> 
+		   				<th>Opis stavke kataloga</th>
+		   				<th>Podgrupa</th>
+					</tr>
+					
+					#{list kataloziRobeIUsluga, as:'katalogRobeIUsluga'}
+						<tr >
+							<td class = "naziv">${katalogRobeIUsluga.nazivStavkeKataloga}</td>
+							<td class = "opis">${katalogRobeIUsluga.opisStavkeKataloga}</td>
+							<td class = "podgrupa">${katalogRobeIUsluga.podgrupa.nazivPodgrupe}</td>
+							<td style = "visibility: hidden; max-width: 0px" class = "izbor_id">${katalogRobeIUsluga.id}</td>
+						</tr>
+					#{/list}
+				</table>
+				
+				<div class="modal-footer">
+					<input id = "izborPickup" type = "button" value = "Izbor" class="btn btn-success"/>
+					<button type="button" class="btn btn-danger" onclick="cancel_katalogModal()">OtkaÅ¾i</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="pickupModal" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">Izaberite nadredjenu formu</div>
+
+			<div class="modal-body">
+				<table style="padding: 2em">
+					<tr class="header">
+						<th>Forma</th>
+					</tr>
+
+					#{list items:nadredjeneForme, as:'forma'}
+					<tr>
+						<td class = "naziv_forme">${forma}</td>
+					</tr>
+					#{/list}
+				</table>
+
+				<div class="modal-footer">
+					<input id="pickupPickup" type="button" value="Izbor" class="btn btn-success" />
+					<button type="button" class="btn btn-danger" onclick="cancel_pickupModal()">OtkaÅ¾i</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modalDialog" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				Katalozi robe i usluga
+			</div>
+			
+      		<div class="modal-body">
+	    		<table style = "padding:2em">
+					<tr class = "header">
+		   				<th>Naziv stavke kataloga</th> 
+		   				<th>Opis stavke kataloga</th>
+		   				<th>Podgrupa</th>
+					</tr>
+					
+					#{list kataloziRobeIUsluga, as:'katalogRobeIUsluga'}
+						<tr #{if katalogRobeIUsluga.id == idd} class = "highlighted" #{/if}>
+							<td class = "naziv">${katalogRobeIUsluga.nazivStavkeKataloga}</td>
+							<td class = "opis">${katalogRobeIUsluga.opisStavkeKataloga}</td>
+							<td class = "podgrupa">${katalogRobeIUsluga.podgrupa.nazivPodgrupe}</td>
+							<td style = "visibility: hidden; max-width: 0px" class = "izbor_id">${katalogRobeIUsluga.id}</td>
+						</tr>
+					#{/list}
+				</table>
+				
+				<div class="modal-footer">
+					<input id = "izborPickup" type = "button" value = "Izbor" class="btn btn-success"/>
+					<button type="button" class="btn btn-danger" onclick="cancel_katalogModal()">Otkazii</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
