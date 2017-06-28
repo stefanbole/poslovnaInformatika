@@ -397,17 +397,17 @@ public class StavkeFakture extends Controller {
 	}
 
 	public static List<StavkaFakture> fillList() {
-		List<StavkaFakture> stavkeFakture = null;
+		List<StavkaFakture> stavkeFakture = new ArrayList<>();
 
-		if (!session.get("idKataloga").equals("null")) {
-			Long id = Long.parseLong(session.get("idKataloga"));
-			stavkeFakture = KataloziRobeIUsluga.findStavkeFakture(id);
-		} else if (!session.get("idFakture").equals("null")) {
-			Long id = Long.parseLong(session.get("idFakture"));
-			stavkeFakture = Fakture.findStavkeFakture(id);
-		} else {
-			stavkeFakture = checkCache();
-		}
+		// if (!session.get("idKataloga").equals("null")) {
+		//Long id = Long.parseLong(session.get("idKataloga"));
+		//stavkeFakture = KataloziRobeIUsluga.findStavkeFakture(id);
+		// } else if (!session.get("idFakture").equals("null")) {
+		 Long id = Long.parseLong(session.get("idFakture"));
+		 stavkeFakture = Fakture.findStavkeFakture(id);
+		// } else {
+		// stavkeFakture = checkCache();
+		// }
 
 		return stavkeFakture;
 	}

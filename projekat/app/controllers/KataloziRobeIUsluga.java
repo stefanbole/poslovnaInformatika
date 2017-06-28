@@ -227,7 +227,7 @@ public class KataloziRobeIUsluga extends Controller {
 	 *            Izabrana forma na koju se prelazi
 	 */
 	public static void nextForm(Long id, String forma) {
-		session.put("idKataloga", id);
+		// session.put("idKataloga", id);
 		session.put("idCenovnika", "null");
 		clearSession();
 
@@ -333,7 +333,10 @@ public class KataloziRobeIUsluga extends Controller {
 		for (int i = 0; i < fields.length; i++) {
 			Annotation annotation = fields[i].getAnnotation(OneToMany.class);
 			if (annotation instanceof OneToMany) {
-				povezaneForme.add(fields[i].getName());
+				if (fields[i].getName().equals("stavkeFakture"))
+					continue;
+				else
+					povezaneForme.add(fields[i].getName());
 			}
 		}
 
@@ -413,14 +416,13 @@ public class KataloziRobeIUsluga extends Controller {
 
 		return stavkeFakture;
 	}
-	
-	
+
 	public static List<StavkaNarudzbe> findStavkeNarudzbe(Long idNarudzbe) {
 		List<StavkaNarudzbe> stavkeNarudzbeAll = StavkaNarudzbe.findAll();
 		List<StavkaNarudzbe> stavkeNarudzba = new ArrayList<>();
 
 		for (StavkaNarudzbe sc : stavkeNarudzbeAll) {
-			if (sc.narudzba.id== idNarudzbe) {
+			if (sc.narudzba.id == idNarudzbe) {
 				stavkeNarudzba.add(sc);
 			}
 		}

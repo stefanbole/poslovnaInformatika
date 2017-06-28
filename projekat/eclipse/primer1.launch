@@ -15,6 +15,6 @@
     <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="play.server.Server"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="primer1"/>
-    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value=" -noverify -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dplay.debug=yes -Dplay.id= -Dapplication.path=&quot;${project_loc:primer1}&quot; -Djava.endorsed.dirs=&quot;C:\Users\Stefan\Desktop\play-1.4.4\play-1.4.4/framework/endorsed&quot; -javaagent:&quot;C:\Users\Stefan\Desktop\play-1.4.4\play-1.4.4/framework/play-1.4.4.jar&quot;"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value=" -noverify -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dplay.debug=yes -Dplay.id= -Dapplication.path=&quot;${project_loc:primer1}&quot; -Djava.endorsed.dirs=&quot;C:\Users\Milena\Desktop\Milena\fax\4.godina\letnji\Poslovna_informatika\play-1.4.4/framework/endorsed&quot; -javaagent:&quot;C:\Users\Milena\Desktop\Milena\fax\4.godina\letnji\Poslovna_informatika\play-1.4.4/framework/play-1.4.4.jar&quot;"/>
 </launchConfiguration>
 

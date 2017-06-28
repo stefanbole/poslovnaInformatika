@@ -34,24 +34,6 @@
 		}
 	}
 	
-	function SelectElement(){
-		if(${session.idKataloga} != null){
-			var options = document.getElementById("katalogRobeIUsluga").children;
-			for (i = 0; i < options.length; i++) {
-    			if(options[i].value == ${session.idKataloga}){
-    				document.getElementById("katalogRobeIUsluga").selectedIndex = i;
-    				break;
-    			}
-			}
-
-			document.getElementById("katalogRobeIUsluga").disabled = true;
-			document.getElementById("zoomBtn").disabled = true;
-		}else{
-			document.getElementById("katalogRobeIUsluga").disabled = false;
-			document.getElementById("zoomBtn").disabled = false;
-		}
-	}
-	
 	function SelectElementFaktura(){
 		if(${session.idFakture} != null){
 			var options = document.getElementById("faktura").children;
@@ -70,6 +52,7 @@
 		}
 	}
 	
+	
 	function remove(id){  <!-- ne znam koji je uanpred selektovani red , ovde se vrsi redirekcija -->
 		if(id == null){
 			alert("Označite red u tabeli!");
@@ -78,7 +61,7 @@
 			if(r == true) {
 		    	$(location).attr('href', '/StavkeFakture/delete?id='+id);
 			}
-			else{
+ 			else{
 				txt = "You pressed Cancel"
 			}
 		}
@@ -187,14 +170,14 @@
 					<th>Faktura</th>
 					<th>Naziv stavke</th>
 	   				<th>Količina</th>
-	   				<th>Jedinična cena</th>
+	   				<th>JediniÄ�na cena</th>
 	   				<th>Vrednost</th>
 	   				<th>Rabat %</th>
 	   				<th>Iznos rabata</th>
 	   				<th>Osnovica za PDV</th> 
 	   				<th>Stopa PDVa</th>
 	   				<th>Iznos PDVa</th>
-	   				<th>Ukupno za plaćanje</th>
+	   				<th>Ukupno za plaÄ‡anje</th>
 				</tr>
 				#{list items:stavkeFakture, as:'stavkaFakture'}
 					<tr #{if stavkaFakture.id== idd} class="highlighted"#{/if} class="tableRow">
@@ -321,7 +304,7 @@
 		   				<th>Ukupno osnovica</th>
 		   				<th>Ukupno PDV</th>
 		   				<th>Ukupno za placanje</th>
-		   				<th>PreduzeÃ„â€¡e</th>
+		   				<th>Preduzeće</th>
 					</tr>
 					
 					#{list fakture, as:'faktura'}

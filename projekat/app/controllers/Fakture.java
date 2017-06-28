@@ -237,7 +237,7 @@ public class Fakture extends Controller {
 			faktura.poslovnaGodina = findPoslovnaGodina;
 			faktura.poslovniPartner = findPoslovniPartner;
 
-			faktura.save();
+			//faktura.save();
 			List<StavkaFakture> stavkeFakture = faktura.stavkeFakture;
 			faktura.ukupnoOsnovica = 0;
 			faktura.ukupnoPDV = 0;
