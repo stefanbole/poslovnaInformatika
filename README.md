@@ -1,4 +1,4 @@
-# poslovnaInformatika
+# Poslovna informatika
 ###### Fakultet tehničkih nauka, Novi Sad
 ###### Poslovna informatika
 
@@ -27,10 +27,10 @@ Pre pokretanja aplikacije potrebno je izvrsiti komandu play dependencies test.
 Za pokretanje aplikacije koristiti komandu play run test, gde je **test** naziv projekta (potrebno je preći u folder gde se nalazi projekat):
 
 ```
-play dependencies test
+play dependencies projekat
 ```
 ```
-play run test
+play run projekat
 ```
 
 zatim u pretraživaču uneti:
