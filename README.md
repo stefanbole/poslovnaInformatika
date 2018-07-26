@@ -24,7 +24,7 @@ Nakon kreiranja baze, u fajlu application.conf (conf/application.conf) potrebno 
 Potrebno je podesiti Java Build Path -> Libraries -> play 1.4.4. 
 
 Pre pokretanja aplikacije potrebno je izvrsiti komandu play dependencies test.
-Za pokretanje aplikacije koristiti komandu play run test, gde je **test** naziv projekta (potrebno je preći u folder gde se nalazi projekat):
+Za pokretanje aplikacije koristiti komandu play run projekat, gde je **projekat** naziv projekta (potrebno je preći u folder gde se nalazi projekat):
 
 ```
 play dependencies projekat
